@@ -1,0 +1,3 @@
+---
+# vars file for configure
+registry_port: 5000

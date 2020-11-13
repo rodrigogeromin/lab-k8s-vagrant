@@ -1,0 +1,7 @@
+- hosts: controller
+  become: true
+  collections:
+    - community.kubernetes
+    - community.general
+  roles:
+  - configure

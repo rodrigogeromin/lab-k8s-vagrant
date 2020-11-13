@@ -1,0 +1,17 @@
+---
+- name: Add nginx ingress chart repo
+  community.kubernetes.helm_repository:
+    name: nginx-ingress
+    repo_url: "https://helm.nginx.com/stable"
+  vars:
+    ansible_python_interpreter: "/usr/bin/python3"
+
+- name: Deploy nginx ingress controller
+  community.kubernetes.helm:
+    name: k8s-nginx-ingress
+    kubeconfig: /home/vagrant/.kube/config
+    chart_ref: nginx-ingress/nginx-ingress
+    release_namespace: kube-system
+    create_namespace: true
+  vars:
+    ansible_python_interpreter: "/usr/bin/python3"

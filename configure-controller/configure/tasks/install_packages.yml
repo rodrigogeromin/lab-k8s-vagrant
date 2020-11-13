@@ -1,0 +1,44 @@
+---
+- name: Install Kubernetes binaries
+  package: 
+    name: "{{ packages }}"
+    state: present
+  vars:
+   packages:
+     - kubectl
+     - yum-utils
+     - device-mapper-persistent-data
+     - lvm2
+     - docker-ce
+     - docker-ce-cli
+     - containerd.io 
+     - vim
+
+- name: create docker directory
+  file:
+    state: directory
+    path: /etc/docker
+
+- name: Deploy Docker daemon.json.
+  copy:
+    src: configure/files/daemon.json
+    dest: /etc/docker/daemon.json
+
+- name: Make sure docker is running
+  systemd:
+    state: started
+    name: docker
+    enabled: yes
+
+- name: Add the user vagrant in group docker
+  user:
+    name: vagrant
+    shell: /bin/bash
+    groups: docker
+    append: yes
+
+- name: Inserting a line in .bashrc
+  lineinfile:
+    state: present
+    path: /home/vagrant/.bashrc
+    line: source <(kubectl completion bash)

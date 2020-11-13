@@ -1,0 +1,3 @@
+{
+  "insecure-registries" : ["registry.172.25.10.10.nip.io:5000"]
+}

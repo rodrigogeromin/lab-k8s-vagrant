@@ -1,0 +1,13 @@
+---
+- name: Create Docker Registry
+  docker_container:
+    name: registry
+    image: registry:2
+    state: started
+    restart_policy: always
+    volumes:
+      - /etc/docker/registry:/var/lib/registry
+    published_ports:
+      - "{{registry_port}}:5000"
+  vars:
+    ansible_python_interpreter: "/usr/bin/python3"

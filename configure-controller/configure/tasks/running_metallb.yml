@@ -1,0 +1,54 @@
+- name: Change configmap kube-proxy to prepare file to metallb
+  shell: "export KUBECONFIG=/home/vagrant/.kube/config; kubectl get configmap kube-proxy -n kube-system -o yaml | sed -e \"s/strictARP: false/strictARP: true/\" | kubectl apply -f - -n kube-system"
+
+- name: Create a namespace
+  community.kubernetes.k8s:
+    state: present
+    kubeconfig: /home/vagrant/.kube/config
+    src: configure/templates/namespace.yaml
+  vars:
+    ansible_python_interpreter: "/usr/bin/python3"
+
+- name: Create a configmap
+  community.kubernetes.k8s:
+    state: present
+    kubeconfig: /home/vagrant/.kube/config
+    definition:
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        namespace: metallb-system
+        name: config
+      data:
+        config: |
+          address-pools:
+          - name: default
+            protocol: layer2
+            addresses:
+            - 172.25.10.50-172.25.10.51
+  vars:
+    ansible_python_interpreter: "/usr/bin/python3"
+
+- name: Create a secret
+  community.kubernetes.k8s:
+    state: present
+    kubeconfig: /home/vagrant/.kube/config
+    definition:
+      apiVersion: v1
+      data:
+        secretkey: JChvcGVuc3NsIHJhbmQgLWJhc2U2NCAxMjgp
+      kind: Secret
+      metadata:
+        name: memberlist
+        namespace: metallb-system
+      type: Opaque
+  vars:
+    ansible_python_interpreter: "/usr/bin/python3"
+
+- name: Deploy MetalLB
+  community.kubernetes.k8s:
+    state: present
+    kubeconfig: /home/vagrant/.kube/config
+    src: configure/templates/metallb.yaml
+  vars:
+    ansible_python_interpreter: "/usr/bin/python3"
