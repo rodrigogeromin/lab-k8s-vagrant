@@ -1,19 +1,12 @@
 ---
-- name: Get stats of a file
-  stat:
-    path: /etc/yum.repos.d/docker-ce.repo
-  register: repofile
-
 - name: Add kubernetes Repo
-  yum_repository:
-    name: kubernetes
-    description: YUM Repo Kubernetes
-    baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-\$basearch
-    gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
-    repo_gpgcheck: 1
-    gpgcheck: 1
-    enabled: 1
+  ansible.builtin.apt_repository:
+    repo: deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main
+    state: present
+    filename: kubernetes.list
 
 - name: Add Docker Repo
-  command: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-  when: repofile.stat.exists == false
+  ansible.builtin.apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+    state: present
+    filename: docker.list

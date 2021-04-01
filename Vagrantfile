@@ -23,16 +23,19 @@ class VagrantPlugins::ProviderVirtualBox::Action::Network
 end
 
 vms = {
-  'kubemaster01' => {'memory' => '2048', 'cpus' => 3, 'ip' => '20'},
-  'node01'    => {'memory' => '1280', 'cpus' => 1, 'ip' => '30'},
-  'node02'    => {'memory' => '1280', 'cpus' => 1, 'ip' => '40'}
+  'kubemaster01' => {'memory' => '4096', 'cpus' => 3, 'ip' => '20'},
+  'node01'       => {'memory' => '4096', 'cpus' => 1, 'ip' => '30'},
+  'node02'       => {'memory' => '4096', 'cpus' => 1, 'ip' => '40'}
 }
 
 Vagrant.configure("2") do |config|
   vms.each do |name, conf|
     config.vm.define "#{name}" do |virtual|
-      virtual.vm.box = "centos/7"
-      virtual.vm.box_version = "2004.01"
+      config.vm.box = "ubuntu/focal64"
+      config.vm.box_version = "20210330.0.0"
+      (0..2).each do |i|
+        virtual.vm.disk :disk, size: "20GB", name: "disk-#{i}"
+      end
       virtual.vm.hostname = "#{name}"
       virtual.vm.network "private_network", ip: "172.25.10.#{conf['ip']}"
       virtual.vm.provision "file", source: "files/motd", destination: ".motd"
@@ -52,14 +55,14 @@ Vagrant.configure("2") do |config|
     end
   end
   config.vm.define "controller", primary: true do |controller|
-    controller.vm.box = "centos/7"
-    controller.vm.box_version = "2004.01"
+    config.vm.box = "ubuntu/focal64"
+    controller.vm.box_version = "20210330.0.0"
     controller.vm.hostname = "controller"
     controller.vm.network "private_network", ip: "172.25.10.10"
     controller.vm.provision "file", source: "files/motd", destination: ".motd"
     controller.vm.provision "file", source: "files", destination: "/home/vagrant/"
     controller.vm.provision "file", source: "configure-controller", destination: "/home/vagrant/"
-    controller.vm.provision "shell", inline: "sudo cp ~vagrant/.motd /etc/motd; sudo yum -y install vim python3 git"
+    controller.vm.provision "shell", inline: "sudo cp ~vagrant/.motd /etc/motd; sudo apt update; sudo apt -y install vim python3 python3-pip git"
     controller.vm.provider "virtualbox" do |vb, override|
       vb.name = "controller"
       vb.memory = "512"

@@ -40,21 +40,20 @@ Hardware
   *  Reinicie o computador
 
 
-## Download do Centos 7
-
+## Download do Ubuntu 20.04
 ------------
 
 Para realizar o download da "box" do Centos 7, execute o comando:
 
 #### Linux
 ```bash
-$ vagrant box add centos/7
+$ vagrant box add ubuntu/focal64 --box-version 20210330.0.0
 $ vagrant plugin install scp-vagrant
 ```
 
 #### Windows
 ```powershell
-PS> vagrant.exe box add centos/7
+PS> vagrant.exe box add ubuntu/focal64 --box-version 20210330.0.0
 PS> vagrant.exe plugin install scp-vagrant
 ```
 >**Obs.:** *Selecione o virtualizador virtualbox.*
