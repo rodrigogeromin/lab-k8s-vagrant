@@ -6,8 +6,7 @@
   vars:
    packages:
      - kubectl
-     - yum-utils
-     - device-mapper-persistent-data
+     - libdevmapper-dev
      - lvm2
      - docker-ce
      - docker-ce-cli
